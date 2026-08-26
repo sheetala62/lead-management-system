@@ -94,7 +94,16 @@ The system provides authentication, lead management, follow-up tracking, dashboa
 
 ### Database
 
-- SQLite Database
+The project uses SQLite. For local development, the database is stored in
+`backend/data/lms.sqlite`. When deploying to Render, SQLite must use a mounted
+persistent disk or the data can be recreated after a service restart.
+
+1. Add a Render persistent disk mounted at `/var/data`.
+2. Set the backend environment variable `DB_PATH` to `/var/data/lms.sqlite`.
+3. Redeploy the backend once, then create or restore your leads.
+
+Do not use the default `./data/lms.sqlite` path for production data on an
+ephemeral hosting filesystem.
 - Automatic Database Creation
 - Seeded Admin User
 

@@ -8,10 +8,10 @@ const bcrypt = require('bcryptjs');
 const sqlite3 = require('sqlite3').verbose();
 require('dotenv').config();
 
-const dataDir = path.join(__dirname, '..', 'data');
+const dbPath = process.env.DB_PATH || path.join(__dirname, '..', 'data', 'lms.sqlite');
+const dataDir = path.dirname(dbPath);
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
-const dbPath = path.join(dataDir, 'lms.sqlite');
 const connection = new sqlite3.Database(dbPath);
 
 function run(sql, params = []) {
