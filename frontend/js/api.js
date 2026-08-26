@@ -2,9 +2,9 @@
 // Single place that knows how to talk to the backend.
 // Change API_BASE_URL when you deploy the backend somewhere other than localhost.
 
-const API_HOST = window.location.hostname || 'localhost';
-const API_BASE_URL = window.LMS_API_BASE_URL || `http://${API_HOST}:5000/api`;
-
+const API_BASE_URL =
+  window.LMS_API_BASE_URL ||
+  'https://lead-management-system-zja6.onrender.com/api';
 function getToken() {
   return localStorage.getItem('lms_token');
 }
