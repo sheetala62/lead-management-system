@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lead Details · Lead Management System</title>
+<script>if (!localStorage.getItem('lms_token')) window.location.replace('login.html');</script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">Lead<span>MS</span></div>
+    <nav>
+      <a href="index.html">Dashboard</a>
+      <a href="leads.html" class="active">Leads</a>
+    </nav>
+    <div class="user-box">
+      <div id="userName">—</div>
+      <button class="btn-secondary btn-sm" id="logoutBtn">Log out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <a href="leads.html" class="back-link">&larr; Back to all leads</a>
+    <div id="alertBox"></div>
+
+    <div class="page-header">
+      <div>
+        <h1 id="leadTitle">Loading...</h1>
+        <p class="subtitle" id="leadSubtitle"></p>
+      </div>
+      <span id="statusBadge"></span>
+    </div>
+
+    <div class="card">
+      <h2>Lead Information</h2>
+      <div class="detail-grid" id="leadInfo"></div>
+    </div>
+
+    <div class="card">
+      <h2>Follow-up History</h2>
+
+      <form id="followupForm" style="margin-bottom:18px;">
+        <div class="form-grid">
+          <div class="field">
+            <label>Date <span class="req">*</span></label>
+            <input type="date" id="followup_date" required>
+          </div>
+          <div class="field">
+            <label>Follow-up Type <span class="req">*</span></label>
+            <select id="followup_type" required></select>
+          </div>
+          <div class="field">
+            <label>Next Follow-up Date</label>
+            <input type="date" id="next_followup_date">
+          </div>
+          <div class="field full">
+            <label>Remarks</label>
+            <textarea id="followup_remarks"></textarea>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary" id="addFollowupBtn" style="margin-top:10px;">+ Add Follow-up</button>
+      </form>
+
+      <div id="followupList"></div>
+    </div>
+  </main>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/lead-details.js"></script>
+</body>
+</html>

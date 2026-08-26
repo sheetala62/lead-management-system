@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leads · Lead Management System</title>
+<script>if (!localStorage.getItem('lms_token')) window.location.replace('login.html');</script>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    align-items: flex-start; justify-content: center;
+    padding: 30px 16px;
+    overflow-y: auto;
+    z-index: 50;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #fff; border-radius: 10px; padding: 22px 24px;
+    width: 100%; max-width: 640px; box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+  }
+  .modal h2 { margin-top: 0; }
+  .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">Lead<span>MS</span></div>
+    <nav>
+      <a href="index.html">Dashboard</a>
+      <a href="leads.html" class="active">Leads</a>
+    </nav>
+    <div class="user-box">
+      <div id="userName">—</div>
+      <button class="btn-secondary btn-sm" id="logoutBtn">Log out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h1>Leads</h1>
+        <p class="subtitle">Search, filter and manage all enquiries</p>
+      </div>
+      <button class="btn-primary" id="openAddBtn">+ Add New Lead</button>
+    </div>
+
+    <div id="alertBox"></div>
+
+    <div class="card">
+      <div class="toolbar">
+        <input type="text" id="searchInput" class="search-box" placeholder="Search by name, company, email or mobile...">
+        <select id="statusFilter"><option value="">All Statuses</option></select>
+        <select id="serviceFilter"><option value="">All Services</option></select>
+        <select id="assignedFilter"><option value="">All Assignees</option></select>
+        <select id="sortBy">
+          <option value="date">Sort: Date</option>
+          <option value="estimated_value">Sort: Estimated Value</option>
+          <option value="lead_name">Sort: Name</option>
+        </select>
+        <select id="sortDir">
+          <option value="desc">Descending</option>
+          <option value="asc">Ascending</option>
+        </select>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Lead</th>
+              <th>Company</th>
+              <th>Service</th>
+              <th>Status</th>
+              <th>Assigned To</th>
+              <th>Est. Value</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="leadsTableBody"></tbody>
+        </table>
+      </div>
+
+      <div id="emptyState" class="empty-state" style="display:none;">No leads found. Try adjusting your filters or add a new lead.</div>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </main>
+</div>
+
+<!-- Add / Edit Modal -->
+<div class="modal-overlay" id="leadModalOverlay">
+  <div class="modal">
+    <h2 id="modalTitle">Add New Lead</h2>
+    <div id="modalAlert"></div>
+    <form id="leadForm">
+      <input type="hidden" id="leadId">
+      <div class="form-grid">
+        <div class="field">
+          <label>Lead Name <span class="req">*</span></label>
+          <input type="text" id="lead_name">
+          <div class="field-error"></div>
+        </div>
+        <div class="field">
+          <label>Company Name <span class="req">*</span></label>
+          <input type="text" id="company_name">
+          <div class="field-error"></div>
+        </div>
+        <div class="field">
+          <label>Mobile <span class="req">*</span></label>
+          <input type="text" id="mobile" placeholder="e.g. 9876543210">
+          <div class="field-error"></div>
+        </div>
+        <div class="field">
+          <label>Email <span class="req">*</span></label>
+          <input type="email" id="email">
+          <div class="field-error"></div>
+        </div>
+        <div class="field">
+          <label>Service Required <span class="req">*</span></label>
+          <select id="service_required"></select>
+          <div class="field-error"></div>
+        </div>
+        <div class="field">
+          <label>Lead Source <span class="req">*</span></label>
+          <select id="lead_source"></select>
+          <div class="field-error"></div>
+        </div>
+        <div class="field">
+          <label>Estimated Value</label>
+          <input type="number" id="estimated_value" min="0" step="1000">
+          <div class="field-error"></div>
+        </div>
+        <div class="field">
+          <label>Assigned To <span class="req">*</span></label>
+          <select id="assigned_to"></select>
+          <div class="field-error"></div>
+        </div>
+        <div class="field">
+          <label>Lead Status <span class="req">*</span></label>
+          <select id="lead_status"></select>
+          <div class="field-error"></div>
+        </div>
+        <div class="field full">
+          <label>Remarks</label>
+          <textarea id="remarks"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="cancelModalBtn">Cancel</button>
+        <button type="submit" class="btn-primary" id="saveLeadBtn">Save Lead</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/leads.js"></script>
+</body>
+</html>

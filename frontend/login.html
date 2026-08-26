@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login · Lead Management System</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-card">
+      <h1>Lead Management System</h1>
+      <p class="subtitle">Sign in to manage enquiries and leads</p>
+
+      <div id="alertBox"></div>
+
+      <form id="loginForm">
+        <div class="field" style="margin-bottom:14px;">
+          <label>Username <span class="req">*</span></label>
+          <input type="text" id="username" autocomplete="username" required>
+        </div>
+        <div class="field" style="margin-bottom:14px;">
+          <label>Password <span class="req">*</span></label>
+          <input type="password" id="password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn-primary" id="loginBtn">Sign In</button>
+      </form>
+
+     
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

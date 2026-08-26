@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard · Lead Management System</title>
+<script>if (!localStorage.getItem('lms_token')) window.location.replace('login.html');</script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">Lead<span>MS</span></div>
+    <nav>
+      <a href="index.html" class="active">Dashboard</a>
+      <a href="leads.html">Leads</a>
+    </nav>
+    <div class="user-box">
+      <div id="userName">—</div>
+      <button class="btn-secondary btn-sm" id="logoutBtn">Log out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h1>Dashboard</h1>
+        <p class="subtitle">Live overview of all enquiries</p>
+      </div>
+      <a href="leads.html" class="btn-primary">View all leads</a>
+    </div>
+
+    <div id="statGrid" class="stat-grid"></div>
+
+    <div class="card">
+      <h2>Leads by Status</h2>
+      <div id="statusChart" class="bar-chart"></div>
+    </div>
+
+    <div class="card">
+      <h2>Leads by Service</h2>
+      <div id="serviceChart" class="bar-chart"></div>
+    </div>
+  </main>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>
