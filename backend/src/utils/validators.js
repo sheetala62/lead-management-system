@@ -4,7 +4,7 @@ const STATUSES = ['New', 'Contacted', 'Proposal Sent', 'Negotiation', 'Won', 'Lo
 const FOLLOWUP_TYPES = ['Call', 'Email', 'WhatsApp', 'Meeting', 'Other'];
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MOBILE_RE = /^[0-9+\-\s()]{7,15}$/;
+const MOBILE_RE = /^\d{10}$/;
 
 function validateLeadPayload(body, { partial = false } = {}) {
   const errors = {};
@@ -27,7 +27,7 @@ function validateLeadPayload(body, { partial = false } = {}) {
     errors.email = 'Invalid email format';
   }
   if (body.mobile && !MOBILE_RE.test(body.mobile)) {
-    errors.mobile = 'Invalid mobile number format';
+    errors.mobile = 'Mobile number must contain exactly 10 digits';
   }
   if (body.service_required && !SERVICES.includes(body.service_required)) {
     errors.service_required = 'Invalid service value';

@@ -21,6 +21,10 @@ const searchInput = el('searchInput');
 const sortBy = el('sortBy');
 const sortDir = el('sortDir');
 
+el('mobile').addEventListener('input', (event) => {
+  event.target.value = event.target.value.replace(/\D/g, '').slice(0, 10);
+});
+
 function badgeClass(status) {
   return 'badge badge-' + status.toLowerCase().replace(/\s+/g, '-');
 }
