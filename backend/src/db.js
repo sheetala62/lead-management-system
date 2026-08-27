@@ -151,8 +151,9 @@ CREATE INDEX IF NOT EXISTS idx_followups_lead ON followups(lead_id);
 
   // Ensure default assignees are seeded and active
   try {
-    const totalCount = (await get('SELECT COUNT(*) AS c FROM assignees')).c || 0;
-    console.log(`[DB-Seed] Total assignees in database: ${totalCount}`);
+    const countResult = await get('SELECT COUNT(*) AS c FROM assignees');
+    const totalCount = Number(countResult?.c) || 0;
+    console.log(`[DB-Seed] Total assignees in database: ${totalCount} (type: ${typeof totalCount})`);
     
     if (totalCount === 0) {
       // Table is completely empty - insert all defaults
@@ -161,8 +162,8 @@ CREATE INDEX IF NOT EXISTS idx_followups_lead ON followups(lead_id);
       
       for (const name of defaults) {
         try {
-          const result = await pool.query(
-            'INSERT INTO assignees (name, active) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+          await pool.query(
+            'INSERT INTO assignees (name, active) VALUES ($1, $2) ON CONFLICT (name) DO NOTHING',
             [name, 1]
           );
           console.log(`[DB-Seed] Inserted: ${name}`);
@@ -171,14 +172,16 @@ CREATE INDEX IF NOT EXISTS idx_followups_lead ON followups(lead_id);
         }
       }
       
-      const verifyCount = (await get('SELECT COUNT(*) AS c FROM assignees')).c || 0;
-      console.log(`[DB-Seed] ✓ Seeded complete. Total assignees now: ${verifyCount}`);
+      const verifyResult = await get('SELECT COUNT(*) AS c FROM assignees');
+      const verifyCount = Number(verifyResult?.c) || 0;
+      console.log(`[DB-Seed] ✓ Seeding complete. Total assignees now: ${verifyCount}`);
     } else {
       // Table has data - activate any inactive ones
       console.log('[DB-Seed] Table has existing data. Ensuring all are active...');
       await pool.query('UPDATE assignees SET active = 1 WHERE active = 0');
       
-      const activeCount = (await get('SELECT COUNT(*) AS c FROM assignees WHERE active = 1')).c || 0;
+      const activeResult = await get('SELECT COUNT(*) AS c FROM assignees WHERE active = 1');
+      const activeCount = Number(activeResult?.c) || 0;
       console.log(`[DB-Seed] ✓ Found ${totalCount} total, ${activeCount} are now active`);
     }
   } catch (err) {
