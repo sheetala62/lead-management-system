@@ -109,7 +109,7 @@ router.post('/', async (req, res, next) => {
         (lead_name, company_name, mobile, email, service_required, lead_source,
          estimated_value, assigned_to, remarks, lead_status, created_at, updated_at)
       VALUES
-        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
     `, [
       b.lead_name,
       b.company_name,
@@ -156,7 +156,7 @@ router.put('/:id', async (req, res, next) => {
         assigned_to = ?,
         remarks = ?,
         lead_status = ?,
-        updated_at = datetime('now')
+        updated_at = NOW()
       WHERE id = ?
     `, [
       b.lead_name,

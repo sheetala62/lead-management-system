@@ -9,15 +9,15 @@ const router = express.Router();
 router.get('/', authenticateToken, async (req, res, next) => {
   try {
     const assignees = await db.all('SELECT id, name FROM assignees WHERE active = 1 ORDER BY name');
-  res.json({
-    success: true,
-    data: {
-      services: SERVICES,
-      sources: SOURCES,
-      statuses: STATUSES,
-      followupTypes: FOLLOWUP_TYPES,
-      assignees: assignees.map((a) => a.name),
-    },
+    res.json({
+      success: true,
+      data: {
+        services: SERVICES,
+        sources: SOURCES,
+        statuses: STATUSES,
+        followupTypes: FOLLOWUP_TYPES,
+        assignees: assignees.map((a) => a.name),
+      },
     });
   } catch (err) {
     next(err);
