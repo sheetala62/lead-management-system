@@ -149,17 +149,25 @@ CREATE INDEX IF NOT EXISTS idx_followups_lead ON followups(lead_id);
     console.log(`Seeded admin user: ${username}`);
   }
 
-  const assigneeCount = (await get('SELECT COUNT(*) AS c FROM assignees')).c;
-  console.log("Assignee Count:", assigneeCount);
-
-const assignees = await all("SELECT * FROM assignees");
-console.log("All Assignees:", assignees);
-  if (assigneeCount === 0) {
-    const names = ['Unassigned', 'Rahul Sharma', 'Priya Nair', 'Amit Verma', 'Sara Khan'];
-    for (const name of names) {
-      await run('INSERT INTO assignees (name) VALUES (?)', [name]);
+  // Ensure default assignees are seeded
+  const assigneeResult = await get('SELECT COUNT(*) AS c FROM assignees WHERE active = 1');
+  const activeAssigneeCount = assigneeResult?.c || 0;
+  
+  if (activeAssigneeCount === 0) {
+    try {
+      const names = ['Unassigned', 'Rahul Sharma', 'Priya Nair', 'Amit Verma', 'Sara Khan'];
+      for (const name of names) {
+        await run('INSERT INTO assignees (name, active) VALUES (?, ?)', [name, 1]);
+      }
+      console.log(`✓ Seeded ${names.length} default assignees`);
+    } catch (err) {
+      console.error('Error seeding assignees:', err.message);
+      // Assignees may already exist but be inactive; try to activate them
+      await pool.query('UPDATE assignees SET active = 1');
+      console.log('✓ Activated existing assignees');
     }
-    console.log('Seeded default assignees');
+  } else {
+    console.log(`✓ Found ${activeAssigneeCount} active assignees`);
   }
 })();
 
