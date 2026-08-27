@@ -150,6 +150,10 @@ CREATE INDEX IF NOT EXISTS idx_followups_lead ON followups(lead_id);
   }
 
   const assigneeCount = (await get('SELECT COUNT(*) AS c FROM assignees')).c;
+  console.log("Assignee Count:", assigneeCount);
+
+const assignees = await all("SELECT * FROM assignees");
+console.log("All Assignees:", assignees);
   if (assigneeCount === 0) {
     const names = ['Unassigned', 'Rahul Sharma', 'Priya Nair', 'Amit Verma', 'Sara Khan'];
     for (const name of names) {
