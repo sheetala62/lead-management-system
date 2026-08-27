@@ -133,11 +133,18 @@ CREATE INDEX IF NOT EXISTS idx_leads_assigned ON leads(assigned_to);
 CREATE INDEX IF NOT EXISTS idx_followups_lead ON followups(lead_id);
 `);
 
-  const userCount = (await get('SELECT COUNT(*) AS c FROM users')).c;
-  if (userCount === 0) {
-    const username = process.env.ADMIN_USERNAME || 'admin';
-    const password = process.env.ADMIN_PASSWORD || 'Admin@123';
-    const hash = bcrypt.hashSync(password, 10);
+  // Ensure admin user exists and has the correct password from environment variables
+  const username = process.env.ADMIN_USERNAME || 'admin';
+  const password = process.env.ADMIN_PASSWORD || 'Admin@123';
+  const hash = bcrypt.hashSync(password, 10);
+  
+  const existingAdmin = await get('SELECT id FROM users WHERE username = ?', [username]);
+  if (existingAdmin) {
+    // Update existing admin user with the correct password from env
+    await run('UPDATE users SET password_hash = ? WHERE username = ?', [hash, username]);
+    console.log(`Updated admin user password: ${username}`);
+  } else {
+    // Insert new admin user if it doesn't exist
     await run('INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)', [username, hash, 'admin']);
     console.log(`Seeded admin user: ${username}`);
   }
