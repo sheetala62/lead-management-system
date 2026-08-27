@@ -30,7 +30,15 @@ function normalizeQuery(sql, params = []) {
   return { text, values: params };
 }
 
-const pool = new Pool(resolveDbConfig());
+const config = resolveDbConfig();
+
+if (config.connectionString) {
+  config.ssl = {
+    rejectUnauthorized: false,
+  };
+}
+
+const pool = new Pool(config);
 
 pool.on('error', (err) => {
   console.error('Unexpected PostgreSQL client error:', err);

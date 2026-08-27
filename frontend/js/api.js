@@ -4,7 +4,7 @@
 
 const API_BASE_URL =
   window.LMS_API_BASE_URL ||
-  'https://lead-management-system-zja6.onrender.com/api';
+  'https://lead-management-system-1-whf8.onrender.com';
 function getToken() {
   return localStorage.getItem('lms_token');
 }
