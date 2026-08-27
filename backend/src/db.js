@@ -149,25 +149,41 @@ CREATE INDEX IF NOT EXISTS idx_followups_lead ON followups(lead_id);
     console.log(`Seeded admin user: ${username}`);
   }
 
-  // Ensure default assignees are seeded
-  const assigneeResult = await get('SELECT COUNT(*) AS c FROM assignees WHERE active = 1');
-  const activeAssigneeCount = assigneeResult?.c || 0;
-  
-  if (activeAssigneeCount === 0) {
-    try {
-      const names = ['Unassigned', 'Rahul Sharma', 'Priya Nair', 'Amit Verma', 'Sara Khan'];
-      for (const name of names) {
-        await run('INSERT INTO assignees (name, active) VALUES (?, ?)', [name, 1]);
+  // Ensure default assignees are seeded and active
+  try {
+    const totalCount = (await get('SELECT COUNT(*) AS c FROM assignees')).c || 0;
+    console.log(`[DB-Seed] Total assignees in database: ${totalCount}`);
+    
+    if (totalCount === 0) {
+      // Table is completely empty - insert all defaults
+      console.log('[DB-Seed] Seeding default assignees...');
+      const defaults = ['Unassigned', 'Rahul Sharma', 'Priya Nair', 'Amit Verma', 'Sara Khan'];
+      
+      for (const name of defaults) {
+        try {
+          const result = await pool.query(
+            'INSERT INTO assignees (name, active) VALUES ($1, $2) ON CONFLICT DO NOTHING',
+            [name, 1]
+          );
+          console.log(`[DB-Seed] Inserted: ${name}`);
+        } catch (insertErr) {
+          console.error(`[DB-Seed] Failed to insert ${name}:`, insertErr.message);
+        }
       }
-      console.log(`✓ Seeded ${names.length} default assignees`);
-    } catch (err) {
-      console.error('Error seeding assignees:', err.message);
-      // Assignees may already exist but be inactive; try to activate them
-      await pool.query('UPDATE assignees SET active = 1');
-      console.log('✓ Activated existing assignees');
+      
+      const verifyCount = (await get('SELECT COUNT(*) AS c FROM assignees')).c || 0;
+      console.log(`[DB-Seed] ✓ Seeded complete. Total assignees now: ${verifyCount}`);
+    } else {
+      // Table has data - activate any inactive ones
+      console.log('[DB-Seed] Table has existing data. Ensuring all are active...');
+      await pool.query('UPDATE assignees SET active = 1 WHERE active = 0');
+      
+      const activeCount = (await get('SELECT COUNT(*) AS c FROM assignees WHERE active = 1')).c || 0;
+      console.log(`[DB-Seed] ✓ Found ${totalCount} total, ${activeCount} are now active`);
     }
-  } else {
-    console.log(`✓ Found ${activeAssigneeCount} active assignees`);
+  } catch (err) {
+    console.error('[DB-Seed] ✗ ERROR:', err.message);
+    // Don't throw - let the app continue with fallback values in meta endpoint
   }
 })();
 
