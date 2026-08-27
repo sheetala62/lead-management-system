@@ -73,15 +73,15 @@ async function apiRequest(path, { method = 'GET', body, auth = true } = {}) {
 
 const api = {
   login: (username, password) =>
-    apiRequest('/auth/login', { method: 'POST', body: { username, password }, auth: false }),
-  logout: () => apiRequest('/auth/logout', { method: 'POST' }),
-  getMeta: () => apiRequest('/meta'),
-  getLeads: (params) => apiRequest(`/leads?${new URLSearchParams(params).toString()}`),
-  getLead: (id) => apiRequest(`/leads/${id}`),
-  createLead: (payload) => apiRequest('/leads', { method: 'POST', body: payload }),
-  updateLead: (id, payload) => apiRequest(`/leads/${id}`, { method: 'PUT', body: payload }),
-  deleteLead: (id) => apiRequest(`/leads/${id}`, { method: 'DELETE' }),
-  getFollowups: (leadId) => apiRequest(`/leads/${leadId}/followups`),
-  addFollowup: (leadId, payload) => apiRequest(`/leads/${leadId}/followups`, { method: 'POST', body: payload }),
-  getDashboardStats: () => apiRequest('/dashboard/stats'),
+    apiRequest('/api/auth/login', { method: 'POST', body: { username, password }, auth: false }),
+  logout: () => apiRequest('/api/auth/logout', { method: 'POST' }),
+  getMeta: () => apiRequest('/api/meta'),
+  getLeads: (params) => apiRequest(`/api/leads?${new URLSearchParams(params).toString()}`),
+  getLead: (id) => apiRequest(`/api/leads/${id}`),
+  createLead: (payload) => apiRequest('/api/leads', { method: 'POST', body: payload }),
+  updateLead: (id, payload) => apiRequest(`/api/leads/${id}`, { method: 'PUT', body: payload }),
+  deleteLead: (id) => apiRequest(`/api/leads/${id}`, { method: 'DELETE' }),
+  getFollowups: (leadId) => apiRequest(`/api/leads/${leadId}/followups`),
+  addFollowup: (leadId, payload) => apiRequest(`/api/leads/${leadId}/followups`, { method: 'POST', body: payload }),
+  getDashboardStats: () => apiRequest('/api/dashboard/stats'),
 };
