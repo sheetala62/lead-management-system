@@ -8,7 +8,7 @@ function notFoundHandler(req, res) {
 function errorHandler(err, req, res, next) {
   console.error('[ERROR]', err);
 
-  if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+  if (err.code === 'SQLITE_CONSTRAINT_UNIQUE' || err.code === '23505') {
     return res.status(409).json({ success: false, message: 'A record with these details already exists.' });
   }
 

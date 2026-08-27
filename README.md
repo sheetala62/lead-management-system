@@ -46,7 +46,7 @@ The system provides authentication, lead management, follow-up tracking, dashboa
 
 ## Database
 
-- SQLite
+- PostgreSQL
 
 ## Authentication
 
@@ -94,18 +94,19 @@ The system provides authentication, lead management, follow-up tracking, dashboa
 
 ### Database
 
-The project uses SQLite. For local development, the database is stored in
-`backend/data/lms.sqlite`. When deploying to Render, SQLite must use a mounted
-persistent disk or the data can be recreated after a service restart.
+This project now uses PostgreSQL for persistent production storage. SQLite is not used.
 
-1. Add a Render persistent disk mounted at `/var/data`.
-2. Set the backend environment variable `DB_PATH` to `/var/data/lms.sqlite`.
-3. Redeploy the backend once, then create or restore your leads.
+Render deployment requirements:
 
-Do not use the default `./data/lms.sqlite` path for production data on an
-ephemeral hosting filesystem.
+1. Create a PostgreSQL database on Render or use an external PostgreSQL provider.
+2. Set the backend environment variables from the Render dashboard:
+   - `DATABASE_URL` or `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`
+3. Redeploy the backend, and the app will create required tables automatically on startup.
+4. The default admin user is seeded only if it does not already exist.
+
 - Automatic Database Creation
 - Seeded Admin User
+- Persistent Production Data
 
 ---
 
@@ -200,6 +201,7 @@ JWT_EXPIRES_IN=8h
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=Admin@123
 CORS_ORIGIN=http://localhost:5500
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/lms
 ```
 
 Start the backend:
@@ -226,7 +228,7 @@ login.html
 
 # Database
 
-The project uses SQLite.
+The project uses PostgreSQL.
 
 Database schema is available in:
 
@@ -241,7 +243,7 @@ database/schema.sql
 - RESTful API architecture
 - JWT-based authentication
 - Password hashing using bcrypt
-- SQLite relational database
+- PostgreSQL relational database
 - Parameterized SQL queries
 - Modular backend structure
 - Separate frontend and backend

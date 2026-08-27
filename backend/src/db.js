@@ -1,97 +1,130 @@
 // db.js
-// Sets up a SQLite database (file-based, zero external server needed).
-// Creates tables if they don't exist and seeds the admin user + reference data.
+// PostgreSQL-backed database layer for production persistence.
+// Creates tables if they do not exist and seeds the admin user + default data.
 
-const path = require('path');
-const fs = require('fs');
 const bcrypt = require('bcryptjs');
-const sqlite3 = require('sqlite3').verbose();
+const { Pool } = require('pg');
 require('dotenv').config();
 
-const dbPath = process.env.DB_PATH || path.join(__dirname, '..', 'data', 'lms.sqlite');
-const dataDir = path.dirname(dbPath);
-if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+function resolveDbConfig() {
+  if (process.env.DATABASE_URL) {
+    return { connectionString: process.env.DATABASE_URL };
+  }
 
-const connection = new sqlite3.Database(dbPath);
-
-function run(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    connection.run(sql, params, function onRun(err) {
-      if (err) return reject(err);
-      resolve({ lastInsertRowid: this.lastID, changes: this.changes });
-    });
-  });
+  return {
+    host: process.env.PGHOST || 'localhost',
+    port: Number(process.env.PGPORT || 5432),
+    database: process.env.PGDATABASE || 'lms',
+    user: process.env.PGUSER || 'postgres',
+    password: process.env.PGPASSWORD || 'postgres',
+  };
 }
 
-function get(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    connection.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
+function normalizeQuery(sql, params = []) {
+  let index = 0;
+  const text = sql.replace(/\?/g, () => {
+    index += 1;
+    return `$${index}`;
   });
+
+  return { text, values: params };
 }
 
-function all(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    connection.all(sql, params, (err, rows) => (err ? reject(err) : resolve(rows)));
-  });
+const pool = new Pool(resolveDbConfig());
+
+pool.on('error', (err) => {
+  console.error('Unexpected PostgreSQL client error:', err);
+});
+
+async function run(sql, params = []) {
+  const queryText = /^\s*INSERT\b/i.test(sql) && !/\bRETURNING\b/i.test(sql)
+    ? `${sql.trim()} RETURNING id`
+    : sql;
+
+  const { text, values } = normalizeQuery(queryText, params);
+  const result = await pool.query(text, values);
+
+  return {
+    lastInsertRowid: result.rows[0]?.id ?? null,
+    changes: result.rowCount ?? 0,
+  };
 }
 
-function exec(sql) {
-  return new Promise((resolve, reject) => {
-    connection.exec(sql, (err) => (err ? reject(err) : resolve()));
-  });
+async function get(sql, params = []) {
+  const { text, values } = normalizeQuery(sql, params);
+  const result = await pool.query(text, values);
+  return result.rows[0] || null;
+}
+
+async function all(sql, params = []) {
+  const { text, values } = normalizeQuery(sql, params);
+  const result = await pool.query(text, values);
+  return result.rows;
+}
+
+async function exec(sql) {
+  const statements = sql
+    .split(';')
+    .map((statement) => statement.trim())
+    .filter(Boolean);
+
+  for (const statement of statements) {
+    await pool.query(statement);
+  }
 }
 
 // ---------- SCHEMA ----------
 const ready = (async () => {
-  await exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
   await exec(`
 CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  username TEXT UNIQUE NOT NULL,
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(255) UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
-  role TEXT NOT NULL DEFAULT 'admin',
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  role VARCHAR(50) NOT NULL DEFAULT 'admin',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS assignees (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT UNIQUE NOT NULL,
-  active INTEGER NOT NULL DEFAULT 1
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) UNIQUE NOT NULL,
+  active SMALLINT NOT NULL DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS leads (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  lead_name TEXT NOT NULL,
-  company_name TEXT NOT NULL,
-  mobile TEXT NOT NULL,
-  email TEXT NOT NULL,
-  service_required TEXT NOT NULL,
-  lead_source TEXT NOT NULL,
-  estimated_value REAL,
-  assigned_to TEXT NOT NULL,
+  id SERIAL PRIMARY KEY,
+  lead_name VARCHAR(255) NOT NULL,
+  company_name VARCHAR(255) NOT NULL,
+  mobile VARCHAR(20) NOT NULL,
+  email VARCHAR(255) NOT NULL,
+  service_required VARCHAR(100) NOT NULL,
+  lead_source VARCHAR(100) NOT NULL,
+  estimated_value NUMERIC(12, 2),
+  assigned_to VARCHAR(255) NOT NULL,
   remarks TEXT,
-  lead_status TEXT NOT NULL DEFAULT 'New',
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  lead_status VARCHAR(50) NOT NULL DEFAULT 'New',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS followups (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id SERIAL PRIMARY KEY,
   lead_id INTEGER NOT NULL REFERENCES leads(id) ON DELETE CASCADE,
-  followup_date TEXT NOT NULL,
-  followup_type TEXT NOT NULL,
+  followup_date TIMESTAMPTZ NOT NULL,
+  followup_type VARCHAR(50) NOT NULL,
   remarks TEXT,
-  next_followup_date TEXT,
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  next_followup_date TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_leads_email ON leads(email);
+CREATE INDEX IF NOT EXISTS idx_leads_mobile ON leads(mobile);
 CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(lead_status);
 CREATE INDEX IF NOT EXISTS idx_leads_service ON leads(service_required);
 CREATE INDEX IF NOT EXISTS idx_leads_assigned ON leads(assigned_to);
 CREATE INDEX IF NOT EXISTS idx_followups_lead ON followups(lead_id);
 `);
 
-  // ---------- SEED ----------
   const userCount = (await get('SELECT COUNT(*) AS c FROM users')).c;
   if (userCount === 0) {
     const username = process.env.ADMIN_USERNAME || 'admin';
@@ -112,6 +145,7 @@ CREATE INDEX IF NOT EXISTS idx_followups_lead ON followups(lead_id);
 })();
 
 module.exports = {
+  resolveDbConfig,
   ready,
   run: (...args) => ready.then(() => run(...args)),
   get: (...args) => ready.then(() => get(...args)),
