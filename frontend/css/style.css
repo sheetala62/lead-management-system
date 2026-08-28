@@ -1268,185 +1268,504 @@ input[type="checkbox"].row-cb { width: 15px; height: 15px; cursor: pointer; acce
 
 /* ============================================================
    MOBILE RESPONSIVE  (320px – 768px)
-   Desktop / laptop styles above are NOT modified.
-   Every rule here is scoped inside a max-width media query
-   or is a utility class only activated on mobile.
+   All rules are inside max-width media queries.
+   Desktop styles above are completely untouched.
    ============================================================ */
 
-/* ── Hamburger button (hidden on desktop) ────────────────── */
+/* ── Hamburger button — hidden on desktop ────────────────── */
 .mob-menu-btn {
   display: none;
-  width: 38px; height: 38px;
-  border: none; background: transparent;
-  color: var(--text-secondary); cursor: pointer;
+  width: 44px;
+  height: 44px;
+  min-height: 44px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
   border-radius: var(--radius-sm);
-  align-items: center; justify-content: center;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
   transition: background var(--ease);
+  padding: 0;
 }
 .mob-menu-btn:hover { background: var(--surface-2); }
 
 /* ── Backdrop overlay ────────────────────────────────────── */
 .mob-sidebar-overlay {
   display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.45);
-  z-index: 199;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.50);
+  z-index: 299;
+  -webkit-tap-highlight-color: transparent;
 }
 .mob-sidebar-overlay.visible { display: block; }
+
+/* Prevent body scroll when mobile menu is open */
 body.mob-menu-open { overflow: hidden; }
 
 /* ============================================================
-   @media mobile
+   Main mobile breakpoint: ≤ 768px
    ============================================================ */
 @media (max-width: 768px) {
 
-  /* ── App shell ── */
-  .app-shell { display: block; }
+  /* ── 1. App shell ──────────────────────────────────────── */
+  .app-shell {
+    display: block !important;
+    min-height: 100vh;
+  }
 
-  /* ── Sidebar: hidden off-screen by default ── */
-  .sidebar,
-  .sidebar[style] {
+  /* ── 2. Sidebar: off-screen by default, slides in ──────── */
+  /*
+     We must override the base .sidebar { position: fixed }
+     AND the desktop @media (min-width:769px) block that
+     uses !important. The solution: use equal-specificity
+     rules inside this media query — they win because they
+     come LATER in the cascade.
+  */
+  .sidebar {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
-    height: 100vh !important;
-    width: 240px !important;
-    transform: translateX(-100%) !important;
-    transition: transform 280ms cubic-bezier(0.4,0,0.2,1) !important;
-    z-index: 200 !important;
+    height: 100dvh !important;   /* dvh = dynamic viewport height on mobile */
+    height: 100vh !important;    /* fallback for older browsers */
+    width: 75vw !important;      /* 75% of screen = ~280px on 375px screen */
+    max-width: 280px !important;
+    transform: translateX(-105%) !important; /* slightly more than -100% prevents edge peep */
+    transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 300ms ease !important;
+    z-index: 300 !important;
     flex-direction: column !important;
     overflow-y: auto !important;
+    overflow-x: hidden !important;
+    box-shadow: none;
   }
 
-  /* ── Sidebar open state ── */
+  /* Sidebar visible state */
   .sidebar.mob-open {
     transform: translateX(0) !important;
-    box-shadow: 4px 0 24px rgba(0,0,0,0.35);
+    box-shadow: 6px 0 32px rgba(0, 0, 0, 0.40) !important;
   }
 
-  /* ── Main wrapper: full width, no offset ── */
+  /* Sidebar nav: always vertical list */
+  .sidebar nav {
+    display: flex !important;
+    flex-direction: column !important;
+    padding: 8px 10px !important;
+    flex: 1;
+  }
+  .sidebar nav a {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 13px 12px !important;
+    min-height: 48px !important;
+    margin-bottom: 2px !important;
+    font-size: 14px !important;
+    border-radius: var(--radius-sm) !important;
+    white-space: nowrap !important;
+  }
+  .sidebar nav a .nav-icon {
+    width: 20px !important;
+    height: 20px !important;
+    flex-shrink: 0 !important;
+  }
+  .sidebar nav a .nav-label {
+    font-size: 14px !important;
+    display: block !important;
+  }
+
+  /* ── 3. Main wrapper ────────────────────────────────────── */
   .main-wrapper {
     margin-left: 0 !important;
     width: 100% !important;
+    min-height: 100vh;
   }
 
-  /* ── Header ── */
-  .mob-menu-btn { display: flex; }
-  .top-header { padding: 0 12px; gap: 8px; }
-  .header-search { flex: 1; max-width: 100%; }
-  .h-name { display: none; }
-  .header-divider { display: none; }
+  /* ── 4. Top header ──────────────────────────────────────── */
+  .mob-menu-btn { display: flex; }  /* show hamburger */
 
-  /* ── Page content ── */
-  .main { padding: 14px 12px; }
-  .breadcrumb { font-size: 11.5px; }
-
-  /* ── Page header ── */
-  .page-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .page-header-left h1 { font-size: 19px; }
-  .page-header-actions { width: 100%; flex-wrap: wrap; gap: 7px; }
-  .page-header-actions .btn-primary,
-  .page-header-actions .btn-secondary {
-    flex: 1; min-width: 120px; justify-content: center;
+  .top-header {
+    padding: 0 14px !important;
+    gap: 10px;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
   }
 
-  /* ── Stat cards: 2 columns ── */
-  .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .stat-card { padding: 14px 12px; }
-  .stat-card .value { font-size: 22px; }
+  /* shrink / hide search on mobile */
+  .header-search { flex: 1; max-width: none; }
+  .header-search input { font-size: 13px; }
 
-  /* ── Dashboard bottom row ── */
-  .dash-bottom-row { grid-template-columns: 1fr; gap: 14px; margin-top: 14px; }
-  .charts-row { grid-template-columns: 1fr; gap: 14px; }
+  .h-name { display: none; }        /* hide username text */
+  .header-divider { display: none; } /* hide pipe separator */
 
-  /* ── Tables ── */
-  .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  table { min-width: 580px; font-size: 12.5px; }
-  th, td { padding: 9px 10px; }
-  .actions-cell { gap: 4px; }
+  /* ── 5. Page content ────────────────────────────────────── */
+  .main { padding: 16px 16px 24px; }
+
+  /* ── 6. Breadcrumb ──────────────────────────────────────── */
+  .breadcrumb {
+    font-size: 12px;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+
+  /* ── 7. Page header ─────────────────────────────────────── */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .page-header-left h1 {
+    font-size: 22px;
+    letter-spacing: -0.02em;
+  }
+  .page-header-left .subtitle {
+    font-size: 13px;
+  }
+  .page-header-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .page-header-actions > * {
+    flex: 1;
+    min-width: 130px;
+    min-height: 44px;
+    justify-content: center;
+  }
+
+  /* ── 8. Buttons ─────────────────────────────────────────── */
+  button, .btn {
+    min-height: 44px;
+  }
+  .btn-sm {
+    min-height: 36px;
+  }
+
+  /* ── 9. Stat / KPI cards: 1 per row on mobile ───────────── */
+  .stat-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .stat-card {
+    padding: 14px 14px;
+  }
+  .stat-card .value {
+    font-size: 26px;
+  }
+  .stat-card .label {
+    font-size: 11px;
+  }
+  .stat-card-footer {
+    font-size: 11px;
+  }
+
+  /* ── 10. Dashboard bottom row & charts ─────────────────── */
+  .dash-bottom-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 14px;
+  }
+  .charts-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  /* ── 11. Cards ──────────────────────────────────────────── */
+  .card {
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .card-title  { font-size: 15px; }
+  .card-header { margin-bottom: 14px; }
+
+  /* ── 12. Tables: horizontal scroll ─────────────────────── */
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    /* clip so it doesn't bleed outside card */
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  }
+  table {
+    min-width: 560px;
+    font-size: 13px;
+  }
+  th { font-size: 11px; padding: 9px 10px; }
+  td { padding: 11px 10px; font-size: 13px; }
+
+  /* Make action buttons in table smaller */
+  .actions-cell {
+    gap: 5px;
+    white-space: nowrap;
+  }
   .actions-cell .btn-sm,
-  .actions-cell .btn-secondary,
-  .actions-cell .btn-danger { padding: 4px 8px; font-size: 11.5px; }
+  .actions-cell button {
+    padding: 6px 10px;
+    font-size: 12px;
+    min-height: 34px;
+  }
 
-  /* ── Toolbar ── */
-  .toolbar { flex-direction: column; align-items: stretch; gap: 8px; }
-  .toolbar select, .toolbar input { width: 100%; }
+  /* ── 13. Toolbar / filters ──────────────────────────────── */
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .toolbar input,
+  .toolbar select { width: 100%; font-size: 14px; min-height: 44px; }
   .search-wrap { min-width: 0; }
 
-  /* ── Forms ── */
-  .form-grid { grid-template-columns: 1fr; }
-  .form-grid .full { grid-column: 1; }
-
-  /* ── Modal: bottom sheet ── */
-  .modal-overlay { padding: 0; align-items: flex-end; }
-  .modal {
-    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-    max-width: 100%; width: 100%;
-    max-height: 92vh; overflow-y: auto;
+  /* ── 14. Forms: single column, full-width inputs ────────── */
+  .form-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px;
   }
-  .modal-body   { padding: 16px; }
-  .modal-header { padding: 14px 16px; }
-  .modal-footer { padding: 12px 16px; gap: 8px; }
+  .form-grid .full { grid-column: 1 !important; }
+
+  input, select, textarea {
+    font-size: 16px !important; /* prevents iOS zoom on focus */
+    min-height: 44px;
+    padding: 10px 13px;
+  }
+  textarea { min-height: 80px; }
+
+  label {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  /* ── 15. Modals: bottom sheet ───────────────────────────── */
+  .modal-overlay {
+    padding: 0 !important;
+    align-items: flex-end !important;
+  }
+  .modal {
+    border-radius: 20px 20px 0 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    margin: 0 !important;
+  }
+  .modal-header {
+    padding: 16px 16px 14px;
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+    z-index: 1;
+    border-radius: 20px 20px 0 0;
+  }
+  .modal-title { font-size: 17px; }
+  .modal-body  { padding: 16px; }
+  .modal-footer {
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    position: sticky;
+    bottom: 0;
+    background: var(--surface-2);
+    border-top: 1px solid var(--border);
+  }
   .modal-footer .btn-primary,
-  .modal-footer .btn-secondary { flex: 1; justify-content: center; }
+  .modal-footer .btn-secondary {
+    flex: 1;
+    justify-content: center;
+    min-height: 44px;
+  }
 
-  /* ── Confirm dialog ── */
-  .confirm-dialog { max-width: calc(100vw - 32px); margin: 0 16px; }
+  /* ── 16. Confirm dialog ─────────────────────────────────── */
+  .confirm-overlay {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+  .confirm-dialog {
+    border-radius: 20px 20px 0 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  .confirm-body  { padding: 28px 20px 18px; }
+  .confirm-footer {
+    padding: 14px 20px;
+    gap: 10px;
+    flex-direction: row;
+  }
+  .confirm-footer .btn-secondary,
+  .confirm-footer .btn-danger {
+    flex: 1;
+    justify-content: center;
+    min-height: 44px;
+  }
 
-  /* ── Lead detail ── */
-  .lead-hero { padding: 18px 16px; border-radius: var(--radius-lg); }
-  .lead-hero-name { font-size: 18px; }
-  .detail-grid { grid-template-columns: 1fr; }
-  .followup-timeline { padding-left: 18px; }
-  .followup-item { padding: 10px 12px; }
+  /* ── 17. Lead hero + detail ─────────────────────────────── */
+  .lead-hero {
+    padding: 20px 16px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 14px;
+  }
+  .lead-hero-name { font-size: 20px; }
+  .lead-hero-sub  { font-size: 13px; }
 
-  /* ── Login ── */
-  .login-page { grid-template-columns: 1fr; }
-  .login-left { display: none; }
-  .login-right { padding: 24px 16px; }
+  .detail-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+  .detail-item  { padding: 12px 14px; }
+  .detail-item .label { font-size: 11px; }
+  .detail-item .value { font-size: 14px; }
+
+  .followup-timeline { padding-left: 20px; }
+  .followup-item     { padding: 12px 14px; }
+  .followup-meta     { gap: 6px; }
+
+  /* ── 18. Login page ─────────────────────────────────────── */
+  .login-page { grid-template-columns: 1fr !important; }
+  .login-left { display: none !important; }
+  .login-right {
+    padding: 28px 20px;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
   .login-card { max-width: 100%; }
-  .login-card-header h1 { font-size: 20px; }
-  .login-submit { padding: 12px; }
+  .login-card-header h1 { font-size: 22px; }
+  .login-card-header p  { font-size: 14px; }
+  .login-form { gap: 16px; }
+  .login-submit { min-height: 48px; font-size: 15px; }
 
-  /* ── Auth pages ── */
-  .auth-page { padding: 16px; }
-  .auth-card { padding: 24px 16px; }
+  /* ── 19. Follow-ups page ────────────────────────────────── */
+  .fu-tabs { width: 100%; border-radius: var(--radius); }
+  .fu-tab  {
+    flex: 1;
+    text-align: center;
+    padding: 10px 6px;
+    font-size: 13px;
+    min-height: 44px;
+  }
+  .fu-card {
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+  }
+  .fu-action { width: 100%; }
+  .fu-action a,
+  .fu-action .btn-secondary {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+    align-items: center;
+  }
 
-  /* ── Toast ── */
-  .toast-container { left: 8px; right: 8px; bottom: 8px; }
+  /* ── 20. Settings page ──────────────────────────────────── */
+  .settings-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    gap: 0;
+  }
+  .settings-tab {
+    flex-shrink: 0;
+    font-size: 13px;
+    padding: 10px 14px;
+    min-height: 44px;
+  }
+  .settings-section  { padding: 16px; }
+  .settings-grid     { grid-template-columns: 1fr !important; gap: 12px; }
+  .settings-grid .full { grid-column: 1 !important; }
+
+  /* ── 21. Employees page ─────────────────────────────────── */
+  /* table already covered by .table-wrapper scroll above */
+
+  /* ── 22. Pagination ─────────────────────────────────────── */
+  .pagination {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .pagination-info { text-align: center; }
+  .pagination-controls {
+    display: flex;
+    gap: 10px;
+  }
+  .pagination-controls button {
+    flex: 1;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  /* ── 23. Toast ──────────────────────────────────────────── */
+  .toast-container { left: 10px; right: 10px; bottom: 12px; }
   .toast { min-width: 0; max-width: 100%; }
 
-  /* ── Follow-ups page ── */
-  .fu-tabs { width: 100%; }
-  .fu-tab { flex: 1; text-align: center; padding: 8px 6px; font-size: 12.5px; }
-  .fu-card { flex-direction: column; gap: 10px; }
-  .fu-action { width: 100%; }
-  .fu-action .btn-secondary { width: 100%; justify-content: center; }
+  /* ── 24. Bar chart ──────────────────────────────────────── */
+  .bar-row {
+    grid-template-columns: 90px 1fr 32px;
+    gap: 8px;
+    font-size: 12px;
+  }
+  .bar-label { font-size: 12px; }
 
-  /* ── Settings ── */
-  .settings-tabs { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 2px; }
-  .settings-tab { flex-shrink: 0; font-size: 12.5px; padding: 8px 12px; }
-  .settings-grid { grid-template-columns: 1fr; }
+  /* ── 25. App footer ─────────────────────────────────────── */
+  .app-footer {
+    font-size: 12px;
+    padding: 14px 16px;
+    text-align: center;
+  }
 
-  /* ── Pagination ── */
-  .pagination { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .pagination-controls { width: 100%; justify-content: space-between; }
-  .pagination-controls .btn-secondary { flex: 1; justify-content: center; }
+  /* ── 26. Misc utility ───────────────────────────────────── */
+  /* Prevent any horizontal overflow at root level */
+  body { overflow-x: hidden; }
 
-  /* ── Bar chart ── */
-  .bar-row { grid-template-columns: 80px 1fr 28px; gap: 6px; font-size: 11.5px; }
+  /* Note composer in lead details */
+  .note-composer {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .note-composer-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
 
-  /* ── App footer ── */
-  .app-footer { font-size: 11px; padding: 12px 16px; }
-}
+  /* Tags grid wrap */
+  .all-tags-grid { gap: 8px; }
+  .all-tag-item  { font-size: 13px; padding: 6px 12px; min-height: 36px; }
 
-/* ── Extra small (< 400px) ───────────────────────────────── */
-@media (max-width: 400px) {
-  .stat-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  .stat-card .value { font-size: 18px; }
-  .stat-card .label { font-size: 10px; }
-  .page-header-left h1 { font-size: 16px; }
-  .main { padding: 10px 8px; }
-  table { min-width: 500px; font-size: 11.5px; }
+  /* Attach drop zone */
+  .attach-drop-zone { padding: 20px 12px; }
+
+} /* end @media (max-width: 768px) */
+
+
+/* ============================================================
+   Extra-small: 375px and below
+   ============================================================ */
+@media (max-width: 375px) {
+
+  .main { padding: 12px 12px 20px; }
+
+  .stat-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-card .value { font-size: 22px; }
+
+  .page-header-left h1 { font-size: 19px; }
+
+  .top-header { padding: 0 10px; height: 52px; }
+
+  table { min-width: 500px; font-size: 12px; }
+  th    { font-size: 10.5px; padding: 8px 8px; }
+  td    { padding: 9px 8px; font-size: 12px; }
+
+  .sidebar nav a {
+    padding: 12px 10px !important;
+    font-size: 13px !important;
+  }
 }
