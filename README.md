@@ -1,43 +1,40 @@
-# Lead Management System
+# LeadMS – Full Stack Lead Management System
 
-A full-stack Lead Management System developed as part of a technical assessment. The application helps organizations manage customer enquiries by allowing users to create, assign, update, track, and follow up on leads through a simple and responsive web interface.
+A modern Full Stack Lead Management System developed to help organizations efficiently manage customer enquiries, assign leads to employees, track follow-ups, monitor lead progress, and analyze business performance through an intuitive dashboard.
 
 ---
 
-# Live Application
+# Live Demo
 
-Frontend:
-https://cosmic-dragon-fedc5f.netlify.app/login.html
+### Frontend
 
-Backend API:
+https://lead-management-system.hegdesheetala62.workers.dev
+
+### Backend API
+
 https://lead-management-system-1-whf8.onrender.com
 
-GitHub Repository:
+### GitHub Repository
+
 https://github.com/sheetala62/lead-management-system
 
 ---
 
 # Project Overview
 
-This application enables employees to efficiently manage customer enquiries for services such as:
+LeadMS is a CRM-style Lead Management application that allows organizations to manage potential customers from initial enquiry to successful conversion.
 
-- Website Development
-- Mobile Application Development
-- SEO
-- Digital Marketing
-- E-Commerce Solutions
-
-The system provides authentication, lead management, follow-up tracking, dashboard analytics, and search/filter functionality through a REST API.
+The system provides secure authentication, lead assignment, follow-up management, employee management, dashboard analytics, search, filtering, and responsive user interfaces for desktop, tablet, and mobile devices.
 
 ---
 
-# Technology Stack
+# Tech Stack
 
 ## Frontend
 
 - HTML5
 - CSS3
-- JavaScript (Vanilla JS)
+- JavaScript (ES6)
 
 ## Backend
 
@@ -53,60 +50,114 @@ The system provides authentication, lead management, follow-up tracking, dashboa
 - JSON Web Token (JWT)
 - bcrypt
 
+## Deployment
+
+- Frontend – Cloudflare Workers (or Netlify if applicable)
+- Backend – Render
+- Database – Neon PostgreSQL
+
+## Version Control
+
+- Git
+- GitHub
+
 ---
 
 # Features
 
-### Authentication
+## Authentication
 
 - Secure Login
 - JWT Authentication
 - Protected Routes
+- Password Encryption
 
-### Dashboard
+## Dashboard
 
 - Total Leads
+- New Leads
+- Won Leads
+- Lost Leads
+- Revenue Overview
 - Lead Status Statistics
-- Potential Business Value
 
-### Lead Management
+## Lead Management
 
-- Create Lead
+- Add Lead
 - View Lead
 - Edit Lead
 - Delete Lead
-- Assign Leads
+- Assign Lead to Employees
 - Update Lead Status
+- Estimated Business Value
+- Remarks
 
-### Search & Filtering
+## Lead Status
 
-- Search Leads
+- New
+- Contacted
+- Proposal Sent
+- Negotiation
+- Won
+- Lost
+
+## Employees
+
+- Employee Listing
+- Lead Assignment
+
+## Follow-ups
+
+- Schedule Follow-ups
+- Track Follow-up Activities
+
+## Search & Filter
+
+- Search by Lead Name
 - Filter by Status
 - Filter by Service
-- Filter by Assignee
+- Filter by Employee
 - Sorting
-- Pagination
 
-### Follow-up Management
+## Profile
 
-- Add Follow-up
-- View Follow-up History
+- View User Profile
 
-### Database
+## Settings
 
-This project now uses PostgreSQL for persistent production storage. SQLite is not used.
+- Application Settings
 
-Render deployment requirements:
+## Responsive Design
 
-1. Create a PostgreSQL database on Render or use an external PostgreSQL provider.
-2. Set the backend environment variables from the Render dashboard:
-   - `DATABASE_URL` or `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`
-3. Redeploy the backend, and the app will create required tables automatically on startup.
-4. The default admin user is seeded only if it does not already exist.
+- Desktop
+- Tablet
+- Mobile
 
-- Automatic Database Creation
-- Seeded Admin User
-- Persistent Production Data
+---
+
+# Services Supported
+
+- Website Development
+- Mobile Application Development
+- UI/UX Design
+- Digital Marketing
+- SEO Optimization
+- CRM Development
+- Software Development
+- E-Commerce Development
+
+---
+
+# Lead Sources
+
+- Website
+- WhatsApp
+- Facebook
+- Instagram
+- LinkedIn
+- Email
+- Referral
+- Cold Call
 
 ---
 
@@ -114,7 +165,7 @@ Render deployment requirements:
 
 ```
 lead-management-system/
-
+│
 ├── backend/
 │   ├── server.js
 │   ├── src/
@@ -129,12 +180,16 @@ lead-management-system/
 │   ├── login.html
 │   ├── index.html
 │   ├── leads.html
-│   ├── lead-details.html
+│   ├── employees.html
+│   ├── followups.html
+│   ├── profile.html
+│   ├── settings.html
 │   ├── css/
 │   └── js/
 │
 ├── database/
-│   └── schema.sql
+│   ├── migration.sql
+│   └── migration2.sql
 │
 └── README.md
 ```
@@ -160,22 +215,20 @@ Admin@123
 # API Endpoints
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/auth/login | User Login |
-| POST | /api/auth/logout | User Logout |
+|---------|----------|-------------|
+| POST | /api/auth/login | Login |
 | GET | /api/dashboard/stats | Dashboard Statistics |
-| GET | /api/meta | Metadata |
 | GET | /api/leads | Get All Leads |
-| GET | /api/leads/:id | Get Single Lead |
-| POST | /api/leads | Create Lead |
+| GET | /api/leads/:id | Get Lead |
+| POST | /api/leads | Add Lead |
 | PUT | /api/leads/:id | Update Lead |
 | DELETE | /api/leads/:id | Delete Lead |
-| GET | /api/leads/:id/followups | Get Follow-ups |
-| POST | /api/leads/:id/followups | Add Follow-up |
+| GET | /api/users | Employee List |
+| GET | /api/followups | Follow-up List |
 
 ---
 
-# Run the Project Locally
+# Installation
 
 ## Clone Repository
 
@@ -183,7 +236,7 @@ Admin@123
 git clone https://github.com/sheetala62/lead-management-system.git
 ```
 
-## Backend Setup
+## Backend
 
 ```bash
 cd backend
@@ -201,10 +254,11 @@ JWT_EXPIRES_IN=8h
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=Admin@123
 CORS_ORIGIN=http://localhost:5500
+
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/lms
 ```
 
-Start the backend:
+Run backend
 
 ```bash
 npm start
@@ -212,13 +266,13 @@ npm start
 
 ---
 
-## Frontend Setup
+## Frontend
 
-Open the **frontend** folder in VS Code.
+Open the frontend folder.
 
-Run using **Live Server** or any static server.
+Run using Live Server.
 
-Open:
+Open
 
 ```
 login.html
@@ -228,44 +282,47 @@ login.html
 
 # Database
 
-The project uses PostgreSQL.
+The project uses PostgreSQL as the primary database.
 
-Database schema is available in:
+Database scripts are available in
 
 ```
-database/schema.sql
+database/migration.sql
 ```
 
 ---
 
 # Technical Design
 
-- RESTful API architecture
-- JWT-based authentication
-- Password hashing using bcrypt
-- PostgreSQL relational database
-- Parameterized SQL queries
-- Modular backend structure
-- Separate frontend and backend
-- Responsive user interface
-- Clean and reusable JavaScript code
+- RESTful API
+- JWT Authentication
+- bcrypt Password Hashing
+- PostgreSQL Database
+- Modular Backend Architecture
+- Responsive UI
+- Clean JavaScript Code
+- Role-based Dashboard
+- Secure API Communication
 
 ---
 
-# Future Improvements
+# Future Enhancements
 
-- Email notifications
-- Role-based access control
-- File attachments
-- Advanced dashboard charts
-- Export leads to Excel/PDF
-- Email reminders for follow-ups
+- Dashboard Charts
+- Email Notifications
+- File Uploads
+- Activity Logs
+- Advanced Reports
+- Multi-role Permission System
+- Dark Mode
+- Mobile App
 
 ---
 
 # Author
 
-Sheetala Hegde
+**Sheetala Hegde**
 
-GitHub:
+GitHub
+
 https://github.com/sheetala62
