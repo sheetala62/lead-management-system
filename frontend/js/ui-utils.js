@@ -162,6 +162,24 @@ function initGlobalSearch() {
   });
 }
 
+/* ── Mobile sidebar helpers ─────────────────────────────── */
+function toggleMobMenu() {
+  const sidebar  = document.getElementById('appSidebar');
+  const backdrop = document.getElementById('mobSidebarOverlay');
+  const isOpen   = sidebar?.classList.contains('mob-open');
+  if (isOpen) { closeMobMenu(); } else { openMobMenu(); }
+}
+function openMobMenu() {
+  document.getElementById('appSidebar')?.classList.add('mob-open');
+  document.getElementById('mobSidebarOverlay')?.classList.add('visible');
+  document.body.classList.add('mob-menu-open');
+}
+function closeMobMenu() {
+  document.getElementById('appSidebar')?.classList.remove('mob-open');
+  document.getElementById('mobSidebarOverlay')?.classList.remove('visible');
+  document.body.classList.remove('mob-menu-open');
+}
+
 /* ==========================================================================
    DYNAMIC SIDEBAR + HEADER INJECTION
    ========================================================================== */
@@ -230,6 +248,13 @@ function initSidebar() {
   const headerEl = document.getElementById('appHeader');
   if (headerEl) {
     headerEl.innerHTML = `
+      <button class="mob-menu-btn" id="mobMenuBtn" aria-label="Open menu" title="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+          <line x1="3" y1="6"  x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
       <div class="header-search">
         <svg class="header-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -251,6 +276,25 @@ function initSidebar() {
           </svg>
         </button>
       </div>`;
+
+    /* ── Mobile sidebar overlay backdrop ── */
+    if (!document.getElementById('mobSidebarOverlay')) {
+      const backdrop = document.createElement('div');
+      backdrop.id = 'mobSidebarOverlay';
+      backdrop.className = 'mob-sidebar-overlay';
+      backdrop.addEventListener('click', closeMobMenu);
+      document.body.appendChild(backdrop);
+    }
+
+    /* ── Hamburger toggle ── */
+    document.getElementById('mobMenuBtn')?.addEventListener('click', e => {
+      e.stopPropagation();
+      toggleMobMenu();
+    });
+    // Close when a nav link is tapped
+    sidebar.querySelectorAll('nav a').forEach(a => {
+      a.addEventListener('click', closeMobMenu);
+    });
 
     /* ── Dropdown appended to BODY so sticky/overflow can't clip it ── */
     // Remove any existing dropdown
