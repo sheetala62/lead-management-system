@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page Not Found · LeadMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="error-page">
+  <div class="error-code" id="errorCode">404</div>
+  <div class="error-title" id="errorTitle">Page not found</div>
+  <div class="error-desc" id="errorDesc">The page you are looking for doesn't exist or has been moved. Double-check the URL or head back home.</div>
+  <div class="error-actions">
+    <a href="javascript:history.back()" class="btn-secondary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="15 18 9 12 15 6"/></svg>
+      Go Back
+    </a>
+    <a href="index.html" class="btn-primary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      Go to Dashboard
+    </a>
+    <a href="help.html" class="btn-secondary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Help Center
+    </a>
+  </div>
+  <div style="margin-top:48px;font-size:12px;color:var(--text-muted);">&copy; <span id="footerYear"></span> LeadMS CRM</div>
+</div>
+<script>
+document.getElementById('footerYear').textContent = new Date().getFullYear();
+// Allow URL params to customise the error: error.html?code=500&title=Server+Error
+const p = new URLSearchParams(window.location.search);
+if (p.get('code'))  document.getElementById('errorCode').textContent  = p.get('code');
+if (p.get('title')) document.getElementById('errorTitle').textContent = p.get('title');
+if (p.get('desc'))  document.getElementById('errorDesc').textContent  = p.get('desc');
+</script>
+</body>
+</html>

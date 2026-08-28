@@ -3,48 +3,113 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard · Lead Management System</title>
+<title>Dashboard · LeadMS</title>
 <script>if (!localStorage.getItem('lms_token')) window.location.replace('login.html');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <div class="app-shell">
-  <aside class="sidebar">
-    <div class="brand">Lead<span>MS</span></div>
-    <nav>
-      <a href="index.html" class="active">Dashboard</a>
-      <a href="leads.html">Leads</a>
-    </nav>
-    <div class="user-box">
-      <div id="userName">—</div>
-      <button class="btn-secondary btn-sm" id="logoutBtn">Log out</button>
-    </div>
-  </aside>
 
-  <main class="main">
-    <div class="page-header">
-      <div>
-        <h1>Dashboard</h1>
-        <p class="subtitle">Live overview of all enquiries</p>
+  <aside class="sidebar" id="appSidebar"></aside>
+
+  <div class="main-wrapper">
+    <header class="top-header" id="appHeader"></header>
+
+    <main class="main">
+
+      <nav class="breadcrumb">
+        <svg class="sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        </svg>
+        <span class="current">Dashboard</span>
+      </nav>
+
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Dashboard</h1>
+          <p class="subtitle">Lead pipeline overview</p>
+        </div>
       </div>
-      <a href="leads.html" class="btn-primary">View all leads</a>
-    </div>
 
-    <div id="statGrid" class="stat-grid"></div>
+      <!-- 6 stat cards (skeletons until JS loads) -->
+      <div id="statGrid" class="stat-grid">
+        <div class="skeleton skeleton-stat"></div>
+        <div class="skeleton skeleton-stat"></div>
+        <div class="skeleton skeleton-stat"></div>
+        <div class="skeleton skeleton-stat"></div>
+        <div class="skeleton skeleton-stat"></div>
+        <div class="skeleton skeleton-stat"></div>
+      </div>
 
-    <div class="card">
-      <h2>Leads by Status</h2>
-      <div id="statusChart" class="bar-chart"></div>
-    </div>
+      <!-- Bottom row: Recent Leads + Status Chart -->
+      <div class="dash-bottom-row">
 
-    <div class="card">
-      <h2>Leads by Service</h2>
-      <div id="serviceChart" class="bar-chart"></div>
-    </div>
-  </main>
+        <!-- Recent Leads -->
+        <div class="card" style="margin-bottom:0;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Recent Leads</div>
+              <div class="card-subtitle">Last 5 leads added</div>
+            </div>
+            <a href="leads.html" class="btn-secondary btn-sm">View all</a>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Lead</th>
+                  <th>Assigned To</th>
+                  <th>Status</th>
+                  <th>Est. Value</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="recentLeadsBody">
+                <tr>
+                  <td><div class="skeleton skeleton-text" style="width:120px;"></div>
+                      <div class="skeleton skeleton-text" style="width:80px;margin-top:5px;"></div></td>
+                  <td><div class="skeleton skeleton-text" style="width:80px;"></div></td>
+                  <td><div class="skeleton skeleton-text" style="width:70px;border-radius:20px;"></div></td>
+                  <td><div class="skeleton skeleton-text" style="width:60px;"></div></td>
+                  <td><div class="skeleton skeleton-text" style="width:70px;"></div></td>
+                </tr>
+                <tr>
+                  <td><div class="skeleton skeleton-text" style="width:100px;"></div></td>
+                  <td><div class="skeleton skeleton-text" style="width:80px;"></div></td>
+                  <td><div class="skeleton skeleton-text" style="width:70px;border-radius:20px;"></div></td>
+                  <td><div class="skeleton skeleton-text" style="width:60px;"></div></td>
+                  <td><div class="skeleton skeleton-text" style="width:70px;"></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Leads by Status chart -->
+        <div class="card" style="margin-bottom:0;">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Leads by Status</div>
+              <div class="card-subtitle">Visual summary of pipeline stages</div>
+            </div>
+          </div>
+          <div id="statusChart">
+            <div class="skeleton skeleton-chart"></div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
 </div>
 
+<div class="toast-container" id="toastContainer"></div>
+
 <script src="js/api.js"></script>
+<script src="js/ui-utils.js"></script>
 <script src="js/dashboard.js"></script>
 </body>
 </html>

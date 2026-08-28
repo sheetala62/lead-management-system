@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Follow-ups · LeadMS</title>
+<script>if (!localStorage.getItem('lms_token')) window.location.replace('login.html');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-shell">
+
+  <aside class="sidebar" id="appSidebar"></aside>
+
+  <div class="main-wrapper">
+    <header class="top-header" id="appHeader"></header>
+
+    <main class="main">
+
+      <nav class="breadcrumb">
+        <a href="index.html">
+          <svg class="sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          </svg>
+          Home
+        </a>
+        <svg class="sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+        <span class="current">Follow-ups</span>
+      </nav>
+
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Follow-ups</h1>
+          <p class="subtitle">Today's and upcoming follow-up schedule</p>
+        </div>
+      </div>
+
+      <!-- Filter tabs -->
+      <div class="fu-tabs">
+        <button class="fu-tab active" data-filter="today">Today</button>
+        <button class="fu-tab" data-filter="upcoming">Upcoming</button>
+        <button class="fu-tab" data-filter="all">All</button>
+      </div>
+
+      <!-- Follow-up list -->
+      <div id="fuList">
+        <div class="skeleton skeleton-row" style="margin-bottom:8px;"></div>
+        <div class="skeleton skeleton-row" style="margin-bottom:8px;"></div>
+        <div class="skeleton skeleton-row" style="margin-bottom:8px;"></div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<style>
+/* Follow-ups tab strip */
+.fu-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 18px;
+  background: var(--surface-2);
+  padding: 4px;
+  border-radius: var(--radius);
+  width: fit-content;
+}
+.fu-tab {
+  padding: 7px 18px;
+  border: none;
+  background: transparent;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font);
+  transition: background 150ms ease, color 150ms ease;
+}
+.fu-tab:hover { color: var(--text); }
+.fu-tab.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+
+/* Follow-up card */
+.fu-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.fu-card:hover { border-color: var(--primary); box-shadow: 0 2px 8px rgba(79,70,229,0.08); }
+.fu-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--primary);
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+.fu-dot.today    { background: #dc2626; }
+.fu-dot.upcoming { background: #d97706; }
+.fu-dot.past     { background: #94a3b8; }
+.fu-body { flex: 1; min-width: 0; }
+.fu-lead-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+}
+.fu-lead-name:hover { color: var(--primary); }
+.fu-company { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+.fu-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.fu-date {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+.fu-type {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: var(--primary-bg);
+  color: var(--primary);
+}
+.fu-remarks { font-size: 12.5px; color: var(--text-muted); margin-top: 5px; }
+.fu-action { flex-shrink: 0; }
+</style>
+
+<script src="js/api.js"></script>
+<script src="js/ui-utils.js"></script>
+<script src="js/followups-page.js"></script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings · LeadMS</title>
+<script>if (!localStorage.getItem('lms_token')) window.location.replace('login.html');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="appSidebar"></aside>
+  <div class="main-wrapper">
+    <header class="top-header" id="appHeader"></header>
+    <main class="main">
+      <nav class="breadcrumb">
+        <a href="index.html"><svg class="sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</a>
+        <svg class="sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <span class="current">Settings</span>
+      </nav>
+      <div class="page-header">
+        <div class="page-header-left"><h1>Settings</h1><p class="subtitle">Company branding, email, integrations and more</p></div>
+        <div class="page-header-actions">
+          <button class="btn-primary" id="saveSettingsBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+            Save Changes
+          </button>
+        </div>
+      </div>
+
+      <div id="alertBox"></div>
+
+      <!-- Tabs -->
+      <div class="settings-tabs">
+        <button class="settings-tab active" data-tab="company">Company</button>
+        <button class="settings-tab" data-tab="branding">Branding</button>
+        <button class="settings-tab" data-tab="smtp">Email / SMTP</button>
+        <button class="settings-tab" data-tab="whatsapp">WhatsApp</button>
+        <button class="settings-tab" data-tab="templates">Email Templates</button>
+        <button class="settings-tab" data-tab="assignees">Assignees</button>
+        <button class="settings-tab" data-tab="advanced">Advanced</button>
+      </div>
+
+      <!-- Company tab -->
+      <div class="settings-panel active" id="tab-company">
+        <div class="settings-section">
+          <div class="settings-section-title">Company Information</div>
+          <div class="settings-section-subtitle">Basic details shown in emails and the app header</div>
+          <div class="settings-grid">
+            <div class="field"><label>Company Name</label><input type="text" id="s_company_name" placeholder="LeadMS CRM"></div>
+            <div class="field"><label>Tagline</label><input type="text" id="s_company_tagline" placeholder="Manage every lead."></div>
+            <div class="field"><label>Company Email</label><input type="email" id="s_company_email" placeholder="admin@yourcompany.com"></div>
+            <div class="field"><label>Company Phone</label><input type="tel" id="s_company_phone" placeholder="+91 98765 43210"></div>
+            <div class="field"><label>Website</label><input type="url" id="s_company_website" placeholder="https://yourcompany.com"></div>
+            <div class="field"><label>Support Email</label><input type="email" id="s_support_email" placeholder="support@yourcompany.com"></div>
+            <div class="field full"><label>Address</label><textarea id="s_company_address" rows="2" placeholder="Full company address"></textarea></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Branding tab -->
+      <div class="settings-panel" id="tab-branding">
+        <div class="settings-section">
+          <div class="settings-section-title">Brand Colors</div>
+          <div class="settings-section-subtitle">Applied to buttons, links and accents across the app</div>
+          <div class="settings-grid">
+            <div class="field">
+              <label>Primary Color</label>
+              <div class="color-input-wrap">
+                <input type="color" id="s_primary_color_picker" value="#4f46e5">
+                <input type="text"  id="s_primary_color"  placeholder="#4f46e5">
+              </div>
+            </div>
+            <div class="field">
+              <label>Accent Color</label>
+              <div class="color-input-wrap">
+                <input type="color" id="s_accent_color_picker" value="#f97316">
+                <input type="text"  id="s_accent_color"  placeholder="#f97316">
+              </div>
+            </div>
+            <div class="field"><label>Logo URL</label><input type="url" id="s_company_logo_url" placeholder="https://…/logo.png"></div>
+            <div class="field"><label>Favicon URL</label><input type="url" id="s_company_favicon_url" placeholder="https://…/favicon.ico"></div>
+          </div>
+        </div>
+        <div class="settings-section">
+          <div class="settings-section-title">Regional Settings</div>
+          <div class="settings-section-subtitle">Date format, timezone and currency</div>
+          <div class="settings-grid">
+            <div class="field">
+              <label>Timezone</label>
+              <select id="s_timezone">
+                <option value="Asia/Kolkata">Asia/Kolkata (IST)</option>
+                <option value="UTC">UTC</option>
+                <option value="America/New_York">America/New_York (EST)</option>
+                <option value="Europe/London">Europe/London (GMT)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Date Format</label>
+              <select id="s_date_format">
+                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+              </select>
+            </div>
+            <div class="field"><label>Currency</label><input type="text" id="s_currency" placeholder="INR"></div>
+            <div class="field"><label>Currency Symbol</label><input type="text" id="s_currency_symbol" placeholder="₹"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SMTP tab -->
+      <div class="settings-panel" id="tab-smtp">
+        <div class="settings-section">
+          <div class="settings-section-title">SMTP Configuration</div>
+          <div class="settings-section-subtitle">Used for password reset, notifications, and team invites. Supports Gmail, SendGrid, Mailgun, AWS SES.</div>
+          <div class="settings-grid">
+            <div class="field"><label>SMTP Host</label><input type="text" id="s_smtp_host" placeholder="smtp.gmail.com"></div>
+            <div class="field"><label>SMTP Port</label><input type="number" id="s_smtp_port" placeholder="587"></div>
+            <div class="field"><label>SMTP Username</label><input type="text" id="s_smtp_user" placeholder="you@gmail.com" autocomplete="off"></div>
+            <div class="field"><label>SMTP Password</label><input type="password" id="s_smtp_pass" placeholder="••••••••" autocomplete="new-password"></div>
+            <div class="field"><label>From Name</label><input type="text" id="s_smtp_from_name" placeholder="LeadMS CRM"></div>
+            <div class="field"><label>From Email</label><input type="email" id="s_smtp_from_email" placeholder="noreply@yourcompany.com"></div>
+            <div class="field full">
+              <label>Use TLS/SSL</label>
+              <select id="s_smtp_secure">
+                <option value="false">STARTTLS (port 587) — recommended</option>
+                <option value="true">SSL/TLS (port 465)</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin-top:16px;">
+            <button class="btn-secondary" id="testSmtpBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              Send Test Email
+            </button>
+            <span id="smtpTestResult" style="margin-left:12px;font-size:13px;"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- WhatsApp tab -->
+      <div class="settings-panel" id="tab-whatsapp">
+        <div class="settings-section">
+          <div class="settings-section-title">WhatsApp Cloud API</div>
+          <div class="settings-section-subtitle">Connect WhatsApp Business API to send lead notifications and follow-up reminders. <a href="https://developers.facebook.com/docs/whatsapp/cloud-api" target="_blank">Setup guide →</a></div>
+          <div class="settings-grid">
+            <div class="field full">
+              <label>Enable WhatsApp</label>
+              <select id="s_whatsapp_enabled">
+                <option value="false">Disabled</option>
+                <option value="true">Enabled</option>
+              </select>
+            </div>
+            <div class="field full"><label>API URL</label><input type="url" id="s_whatsapp_api_url" placeholder="https://graph.facebook.com/v18.0/YOUR_PHONE_ID/messages"></div>
+            <div class="field"><label>Bearer Token</label><input type="password" id="s_whatsapp_token" placeholder="EAAxxxx…" autocomplete="off"></div>
+            <div class="field"><label>From Number</label><input type="tel" id="s_whatsapp_from" placeholder="+911234567890"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email Templates tab -->
+      <div class="settings-panel" id="tab-templates">
+        <div class="settings-section">
+          <div class="settings-section-title">Email Templates</div>
+          <div class="settings-section-subtitle">Customise the emails sent by the system. Use <code>{{variable}}</code> placeholders.</div>
+          <div class="field" style="margin-bottom:16px;">
+            <label>Select Template</label>
+            <select id="templateSelect"></select>
+          </div>
+          <div id="templateEditor" class="template-editor" style="display:none;">
+            <div class="settings-grid">
+              <div class="field full"><label>Subject</label><input type="text" id="tpl_subject"></div>
+              <div class="field full"><label>HTML Body</label><textarea id="tpl_body_html" rows="12"></textarea></div>
+              <div class="field full"><label>Plain Text Body</label><textarea id="tpl_body_text" rows="5"></textarea></div>
+              <div class="field full">
+                <label>Available Variables</label>
+                <div id="tplVariables" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;"></div>
+              </div>
+            </div>
+            <div style="margin-top:14px;display:flex;gap:10px;">
+              <button class="btn-primary" id="saveTemplateBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>
+                Save Template
+              </button>
+              <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:13px;cursor:pointer;">
+                <input type="checkbox" id="tpl_is_active" style="width:auto;"> Active
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assignees tab -->
+      <div class="settings-panel" id="tab-assignees">
+        <div class="settings-section">
+          <div class="settings-section-title">Manage Assignees</div>
+          <div class="settings-section-subtitle">Assignees appear in lead forms. Deactivating removes them from dropdowns but preserves historical data.</div>
+          <div style="display:flex;gap:10px;margin-bottom:16px;">
+            <input type="text" id="newAssigneeName" placeholder="New assignee name…" style="max-width:260px;">
+            <button class="btn-primary" id="addAssigneeBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add
+            </button>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Name</th><th>Status</th><th>Actions</th></tr></thead>
+              <tbody id="assigneesTableBody"></tbody>
+            </table>
+          </div>
+          <div id="assigneesEmpty" class="empty-state" style="display:none;padding:32px;">
+            <div class="empty-state-title">No assignees yet</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advanced tab -->
+      <div class="settings-panel" id="tab-advanced">
+        <div class="settings-section">
+          <div class="settings-section-title">Security &amp; Access</div>
+          <div class="settings-section-subtitle">Control registration and email verification requirements</div>
+          <div class="settings-grid">
+            <div class="field">
+              <label>Allow Self-Registration</label>
+              <select id="s_allow_registration">
+                <option value="false">Disabled (admin creates accounts)</option>
+                <option value="true">Enabled (anyone can register)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Require Email Verification</label>
+              <select id="s_require_email_verification">
+                <option value="false">Not required</option>
+                <option value="true">Required before login</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Session Timeout (hours)</label>
+              <input type="number" id="s_session_timeout_hours" min="1" max="168" placeholder="8">
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+    <footer class="app-footer">&copy; <span id="footerYear"></span> LeadMS CRM &nbsp;·&nbsp;<a href="help.html">Help</a></footer>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Confirm dialog -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-dialog">
+    <div class="confirm-body">
+      <div class="confirm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></div>
+      <div class="confirm-title">Deactivate Assignee?</div>
+      <div class="confirm-message" id="confirmMessage">This assignee will no longer appear in dropdowns.</div>
+    </div>
+    <div class="confirm-footer">
+      <button class="btn-secondary" id="confirmCancelBtn">Cancel</button>
+      <button class="btn-danger" id="confirmDeleteBtn">Deactivate</button>
+    </div>
+  </div>
+</div>
+
+<script>document.getElementById('footerYear').textContent = new Date().getFullYear();</script>
+<script src="js/api.js"></script>
+<script src="js/ui-utils.js"></script>
+<script src="js/settings.js"></script>
+</body>
+</html>

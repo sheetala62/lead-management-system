@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel · LeadMS</title>
+<script>if (!localStorage.getItem('lms_token')) window.location.replace('login.html');</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar" id="appSidebar"></aside>
+  <div class="main-wrapper">
+    <header class="top-header" id="appHeader"></header>
+    <main class="main">
+      <nav class="breadcrumb">
+        <a href="index.html"><svg class="sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Home</a>
+        <svg class="sep" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        <span class="current">Admin Panel</span>
+      </nav>
+
+      <div class="page-header">
+        <div class="page-header-left"><h1>Admin Panel</h1><p class="subtitle">Staff management, audit logs, and system overview</p></div>
+      </div>
+
+      <div id="alertBox"></div>
+      <div id="adminRoleAlert"></div>
+
+      <!-- System stats -->
+      <div id="adminStatGrid" class="stat-grid" style="margin-bottom:24px;">
+        <div class="skeleton skeleton-stat"></div>
+        <div class="skeleton skeleton-stat"></div>
+        <div class="skeleton skeleton-stat"></div>
+        <div class="skeleton skeleton-stat"></div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="staff">Staff</button>
+        <button class="admin-tab" data-tab="login-history">Login History</button>
+        <button class="admin-tab" data-tab="audit-logs">Audit Logs</button>
+      </div>
+
+      <!-- Staff panel -->
+      <div class="admin-panel active" id="tab-staff">
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Team Members</div><div class="card-subtitle">Manage staff accounts and roles</div></div>
+            <button class="btn-primary" id="addStaffBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Staff
+            </button>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>User</th><th>Role</th><th>Email</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
+              <tbody id="staffTableBody"></tbody>
+            </table>
+          </div>
+          <div id="staffEmpty" class="empty-state" style="display:none;">
+            <div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+            <div class="empty-state-title">No staff members yet</div>
+            <div class="empty-state-desc">Add your first team member using the button above.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Login history panel -->
+      <div class="admin-panel" id="tab-login-history">
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Login History</div><div class="card-subtitle">All login attempts with IP and browser info</div></div>
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="loginHistorySearch" placeholder="Filter by username…" style="max-width:200px;font-size:12.5px;padding:7px 12px;">
+              <select id="loginStatusFilter" style="max-width:140px;font-size:12.5px;padding:7px 12px;">
+                <option value="">All</option>
+                <option value="success">Success</option>
+                <option value="failed">Failed</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>User</th><th>Status</th><th>IP Address</th><th>Browser</th><th>Time</th></tr></thead>
+              <tbody id="loginHistoryBody"></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="loginPagination"></div>
+        </div>
+      </div>
+
+      <!-- Audit logs panel -->
+      <div class="admin-panel" id="tab-audit-logs">
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Audit Logs</div><div class="card-subtitle">Every action performed in the system</div></div>
+            <div style="display:flex;gap:8px;">
+              <input type="text" id="auditActorSearch" placeholder="Filter by actor…" style="max-width:200px;font-size:12.5px;padding:7px 12px;">
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>Actor</th><th>Action</th><th>Description</th><th>Entity</th><th>IP</th><th>Time</th></tr></thead>
+              <tbody id="auditLogsBody"></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="auditPagination"></div>
+        </div>
+      </div>
+
+    </main>
+    <footer class="app-footer">&copy; <span id="footerYear"></span> LeadMS CRM &nbsp;·&nbsp;<a href="help.html">Help</a></footer>
+  </div>
+</div>
+
+<!-- Add Staff Modal -->
+<div class="modal-overlay" id="staffModalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="staffModalTitle">Add Staff Member</span>
+      <button class="modal-close" id="staffModalClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div id="staffModalAlert" class="modal-alert"></div>
+      <form id="staffForm" novalidate>
+        <input type="hidden" id="staffId">
+        <div class="form-grid">
+          <div class="field"><label for="staff_username">Username <span class="req">*</span></label><input type="text" id="staff_username" placeholder="john.smith" autocomplete="off"></div>
+          <div class="field"><label for="staff_full_name">Full Name</label><input type="text" id="staff_full_name" placeholder="John Smith"></div>
+          <div class="field"><label for="staff_email">Email</label><input type="email" id="staff_email" placeholder="john@company.com"></div>
+          <div class="field"><label for="staff_phone">Phone</label><input type="tel" id="staff_phone" placeholder="+91…"></div>
+          <div class="field"><label for="staff_role">Role <span class="req">*</span></label>
+            <select id="staff_role">
+              <option value="staff">Staff</option>
+              <option value="manager">Manager</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="field" id="staffPasswordField"><label for="staff_password">Password <span class="req">*</span></label><input type="password" id="staff_password" placeholder="Min. 6 characters" autocomplete="new-password"></div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="staffModalCancel">Cancel</button>
+      <button class="btn-primary" id="staffModalSave"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg> Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reset Password Modal -->
+<div class="modal-overlay" id="resetPwdOverlay">
+  <div class="modal" style="max-width:400px;">
+    <div class="modal-header">
+      <span class="modal-title">Reset Password</span>
+      <button class="modal-close" id="resetPwdClose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="resetPwdUserId">
+      <div class="field"><label>New Password <span class="req">*</span></label><input type="password" id="resetPwdInput" placeholder="Min. 6 characters" autocomplete="new-password"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="resetPwdCancel">Cancel</button>
+      <button class="btn-primary" id="resetPwdSave">Reset Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-dialog">
+    <div class="confirm-body">
+      <div class="confirm-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></div>
+      <div class="confirm-title">Deactivate User?</div>
+      <div class="confirm-message" id="confirmMessage">This user will no longer be able to log in.</div>
+    </div>
+    <div class="confirm-footer">
+      <button class="btn-secondary" id="confirmCancelBtn">Cancel</button>
+      <button class="btn-danger" id="confirmDeleteBtn">Deactivate</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<script>document.getElementById('footerYear').textContent = new Date().getFullYear();</script>
+<script src="js/api.js"></script>
+<script src="js/ui-utils.js"></script>
+<script src="js/admin.js"></script>
+</body>
+</html>

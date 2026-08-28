@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Success · LeadMS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="success-page">
+  <div class="success-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+  <div class="success-title" id="successTitle">Done!</div>
+  <div class="success-desc" id="successDesc">The operation completed successfully.</div>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;" id="successActions">
+    <a href="index.html" class="btn-primary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      Go to Dashboard
+    </a>
+  </div>
+  <div style="margin-top:48px;font-size:12px;color:var(--text-muted);">&copy; <span id="footerYear"></span> LeadMS CRM</div>
+</div>
+<script>
+document.getElementById('footerYear').textContent = new Date().getFullYear();
+const p = new URLSearchParams(window.location.search);
+if (p.get('title')) document.getElementById('successTitle').textContent = p.get('title');
+if (p.get('desc'))  document.getElementById('successDesc').textContent  = p.get('desc');
+if (p.get('redirect')) {
+  const sec = parseInt(p.get('delay') || '3', 10);
+  document.getElementById('successDesc').textContent += ` Redirecting in ${sec}s…`;
+  setTimeout(() => window.location.href = p.get('redirect'), sec * 1000);
+}
+</script>
+</body>
+</html>
